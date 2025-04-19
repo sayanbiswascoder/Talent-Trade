@@ -13,7 +13,6 @@ import { collection, getFirestore, onSnapshot } from "firebase/firestore";
 import { checkMatch, checkMutualMatch, addMatch, addMatchs } from "@/utils/api";
 import { AuthContext } from "@/contexts/AuthContext";
 import { useNavigation } from "@react-navigation/native";
-import messaging from '@react-native-firebase/messaging'
 
 const { width, height } = Dimensions.get("window");
 
@@ -68,19 +67,21 @@ const App = () => {
   };
 
   const onRightSwipe = async(userId) => {
-    const swipedUser = users.find((user) => user.id === userId);
+    const swipedUser = users.find((user) => user.uid === userId);
     setSwipedUsers((prev) => ({
       ...prev,
       right: [...prev.right, swipedUser],
     }));
     try {
       const hasLiked = await checkMatch(authUser.uid, swipedUser.uid);
+      console.log(authUser, swipedUser)
       if (!hasLiked) {
         const isMutualMatch = await checkMutualMatch(authUser.uid, swipedUser.uid);
         if (!isMutualMatch) {
           await addMatch(authUser.uid, swipedUser.uid);
         }
       } else {
+        console.log("match")
         addMatchs(authUser.uid, swipedUser.uid)
       }
     } catch (error) {
@@ -113,7 +114,7 @@ const App = () => {
         users.map((user) => (
           <Swiper
             key={user.uid}
-            onSwipe={(dir) => onSwipe(dir, user.id)}
+            onSwipe={(dir) => onSwipe(dir, user.uid)}
             swipeRequirementType="position"
             swipeThreshold={100}
             cardStyle={styles.card}

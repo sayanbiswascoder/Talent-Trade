@@ -133,14 +133,21 @@ export const getMatches = async (userId) => {
 export const addMatchs = async (userId1, userId2) => {
     try {
         // Check if match already exists
-        const existingMatchQuery = query(
+        const existingMatchQuery1 = query(
             collection(db, 'mutualMatches'),
             where('userId1', '==', userId1),
             where('userId2', '==', userId2)
         );
-        const existingMatchSnapshot = await getDocs(existingMatchQuery);
+        const existingMatchSnapshot1 = await getDocs(existingMatchQuery1);
+
+        const existingMatchQuery2 = query(
+            collection(db, 'mutualMatches'),
+            where('userId1', '==', userId2),
+            where('userId2', '==', userId1)
+        );
+        const existingMatchSnapshot2 = await getDocs(existingMatchQuery2);
         
-        if (!existingMatchSnapshot.empty) {
+        if (!existingMatchSnapshot1.empty && !existingMatchQuery2.empty) {
             console.log('Match already exists');
             return;
         }
@@ -261,14 +268,14 @@ export const checkMatch = async (userId, likedUserId) => {
         where("userId1", "==", userId)
       );
       const querySnapshot = await getDocs(q);
-      const matches1 = querySnapshot.docs.map(doc => doc.data());
+      const matches1 = querySnapshot.docs.map(doc => ({ chatId: doc.id, ...doc.data() }));
 
       const q2 = query(
         collection(db, "mutualMatches"),
         where("userId2", "==", userId)
       );
       const querySnapshot2 = await getDocs(q2);
-      const matches2 = querySnapshot2.docs.map(doc => doc.data());
+      const matches2 = querySnapshot2.docs.map(doc => ({ chatId: doc.id, ...doc.data() }));
 
       return [...matches1, ...matches2];
     } catch (error) {

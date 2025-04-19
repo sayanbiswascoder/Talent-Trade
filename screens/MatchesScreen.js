@@ -149,7 +149,7 @@ const ChatItem = ({ chat, index }) => {
   };
 
   const handlePress = () => {
-    navigation.navigate('Chat', { uid: chat.id });
+    navigation.navigate('Chat', { chatId: chat.chatId, userId: chat.id });
   };
 
   return (
@@ -183,13 +183,11 @@ const ChatListScreen = () => {
   useEffect(()=> {
     const fetchChats = async() => {
       let chats = await getMutualMatches(authUser.uid);
-      console.log(chats)
       chats = await Promise.all(chats.map(async chat => {
         const oppositeUserId = chat.userId1 === authUser.uid ? chat.userId2 : chat.userId1;
         const oppositeUser = await getUser(oppositeUserId);
-        return oppositeUser;
+        return {...oppositeUser, chatId: chat.chatId};
       }));
-      console.log(chats)
       setChats(chats)
     }
     fetchChats()

@@ -5,7 +5,8 @@ const firebaseConfig = {
   storageBucket: "skillswap-7849d.firebasestorage.app",
   messagingSenderId: "468132285348",
   appId: "1:468132285348:web:240e69382794379219cf31",
-  measurementId: "G-EQ49W5ZX4Q"
+  measurementId: "G-EQ49W5ZX4Q",
+  databaseURL: "https://skillswap-7849d-default-rtdb.asia-southeast1.firebasedatabase.app",
 };
 
 export default firebaseConfig;

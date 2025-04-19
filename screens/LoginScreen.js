@@ -85,8 +85,10 @@ import {
   Alert,
 } from 'react-native';
 import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider } from 'firebase/auth';
+import { getFirestore, doc, updateDoc } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import app from '../firebase/firebase';
+import messaging from '@react-native-firebase/messaging';
 import { AuthContext } from '@/contexts/AuthContext';
 // import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
@@ -113,6 +115,15 @@ const LoginScreen = () => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       // setUser(user);
+      await messaging().registerDeviceForRemoteMessages();
+      const token = await messaging().getToken();
+      
+      const db = getFirestore(app);
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, {
+        fcmToken: token
+      });
+
       navigation.reset({
         index: 0,
         routes: [{ name: 'Matching' }],
