@@ -39,3 +39,7 @@ app-example
 .qodo
 
 google-services.json
+
+android/
+.idx/
+.vscode/
