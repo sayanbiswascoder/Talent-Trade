@@ -86,9 +86,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.tap2deliver.skillswap'
+    namespace 'com.talenttrade'
     defaultConfig {
-        applicationId 'com.tap2deliver.skillswap'
+        applicationId 'com.talenttrade'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

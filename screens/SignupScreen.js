@@ -210,14 +210,15 @@ import {
   Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { doc, signInWithCredential,  } from 'firebase/firestore';
+import { doc, signInWithCredential } from 'firebase/firestore';
 import { GoogleSignin, GoogleAuthProvider } from '@react-native-google-signin/google-signin';
 import { addUser } from '@/utils/api';
+import app, { auth } from '@/firebase/firebase';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 
 const SignUpScreen = () => {
   const navigation = useNavigation();
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -226,10 +227,27 @@ const SignUpScreen = () => {
 
   GoogleSignin.configure({
     webClientId: "468132285348-k9vilju8uru436ijlsp3idh8jmio90o3.apps.googleusercontent.com",
+    scopes: ['https://www.googleapis.com/auth/drive.file'], // Access to files created by your app
+    offlineAccess: false,
   });
 
-  const handleSignUp = () => {
-    console.log('Sign up:', { firstName, lastName, email, password });
+  const handleSignUp = async () => {
+    try {
+      if(password != confirmPassword) return;
+      const auth = getAuth(app);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      await addUser({
+        uid: user.uid,
+        name: name,
+        email: email,
+        profession: "",
+        skills: [],
+      });
+      navigation.navigate('CompleteProfile');
+    } catch (error) {
+      console.log('Error signing up:', error);
+    }
   };
 
   const handleGoogleSignUp = async () => {
@@ -268,15 +286,9 @@ const SignUpScreen = () => {
       <Text style={styles.title}>Sign Up</Text>
       <TextInput
         style={styles.input}
-        placeholder="First Name"
-        value={firstName}
-        onChangeText={setFirstName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Last Name"
-        value={lastName}
-        onChangeText={setLastName}
+        placeholder="Name"
+        value={name}
+        onChangeText={setName}
       />
       <TextInput
         style={styles.input}
@@ -356,7 +368,7 @@ const SignUpScreen = () => {
       <TouchableOpacity>
         <Text style={styles.loginText}>
           Already have an account?{' '}
-          <Text style={styles.link} onPress={() => console.log('Navigate to Login')}>
+          <Text style={styles.link} onPress={() => navigation.navigate("Login")}>
             Login
           </Text>
         </Text>

@@ -89,6 +89,24 @@ export const getUsers = async () => {
     }
   };
 
+  export const getUser = async (userId) => {
+    try {
+      const docRef = doc(db, "users", userId);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        return {
+          id: docSnap.id,
+          ...docSnap.data()
+        };
+      }
+      return null;
+    } catch (error) {
+      console.error('Error getting user from Firestore:', error);
+      return null;
+    }
+  };
+
+
   export const getUserFromId = async (userId) => {
     try {
       const docRef = doc(db, "users", userId);
@@ -100,7 +118,7 @@ export const getUsers = async () => {
     }
   };
 
-  export const getMatches = async (userId) => {
+export const getMatches = async (userId) => {
     try {
         const q = query(collection(db, 'mutualMatches'), where('userId1', '==', userId));
         const querySnapshot = await getDocs(q);
@@ -109,6 +127,34 @@ export const getUsers = async () => {
     } catch (error) {
         console.error('Error getting matches from Firestore:', error);
         return [];
+    }
+};
+
+export const addMatchs = async (userId1, userId2) => {
+    try {
+        // Check if match already exists
+        const existingMatchQuery = query(
+            collection(db, 'mutualMatches'),
+            where('userId1', '==', userId1),
+            where('userId2', '==', userId2)
+        );
+        const existingMatchSnapshot = await getDocs(existingMatchQuery);
+        
+        if (!existingMatchSnapshot.empty) {
+            console.log('Match already exists');
+            return;
+        }
+
+        // Add new match
+        await addDoc(collection(db, 'mutualMatches'), {
+            userId1: userId1,
+            userId2: userId2,
+            timestamp: serverTimestamp()
+        });
+
+        console.log('Match added successfully');
+    } catch (error) {
+        console.error('Error adding match to Firestore:', error);
     }
 };
 
@@ -207,6 +253,29 @@ export const checkMatch = async (userId, likedUserId) => {
         return false;
       }
   }
+
+  export const getMutualMatches = async (userId) => {
+    try {
+      const q = query(
+        collection(db, "mutualMatches"),
+        where("userId1", "==", userId)
+      );
+      const querySnapshot = await getDocs(q);
+      const matches1 = querySnapshot.docs.map(doc => doc.data());
+
+      const q2 = query(
+        collection(db, "mutualMatches"),
+        where("userId2", "==", userId)
+      );
+      const querySnapshot2 = await getDocs(q2);
+      const matches2 = querySnapshot2.docs.map(doc => doc.data());
+
+      return [...matches1, ...matches2];
+    } catch (error) {
+      console.error('Error getting mutual matches from Firestore:', error);
+      return [];
+    }
+  };
 
   export const checkMutualMatch = async (userId, likedUserId) => {
     try {

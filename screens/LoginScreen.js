@@ -96,7 +96,7 @@ const LoginScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const auth = getAuth(app);
+  const auth = getAuth();
   const navigation = useNavigation();
   const { user: authUser } = useContext(AuthContext);
 

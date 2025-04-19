@@ -1,4 +1,4 @@
-package com.tap2deliver.skillswap
+package com.talenttrade
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

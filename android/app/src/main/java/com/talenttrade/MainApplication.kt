@@ -1,4 +1,4 @@
-package com.tap2deliver.skillswap
+package com.talenttrade
 
 import android.app.Application
 import android.content.res.Configuration

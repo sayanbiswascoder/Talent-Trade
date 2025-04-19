@@ -16,7 +16,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.tap2deliver.skillswap"
+      "package": "com.talenttrade"
     },
     "web": {
       "bundler": "metro",
